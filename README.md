@@ -73,9 +73,9 @@ Automated evaluation scenarios across verbose memos, bloated PRDs, and enterpris
 
 | Fixture | Artifact Type | Original Inventory | Reduced Core | Compression Ratio | Constraints Survived |
 |:--------|:--------------|:-------------------|:-------------|:------------------|:---------------------|
-| `evals/fixtures/verbose-memo.md` | Executive Memo | | | | |
-| `evals/fixtures/bloated-prd.md` | 4-Page PRD | | | | |
-| `evals/fixtures/verbose-module.js`| 500-Line Code Module | | | | |
+| `evals/fixtures/verbose-memo.md` | Executive Memo | 19 lines (1.6 KB) | 6 lines (208 B) | **86.9%** | 2 / 2 (100%) |
+| `evals/fixtures/bloated-prd.md` | 4-Page PRD | 30 lines (2.0 KB) | 8 lines (291 B) | **85.4%** | 4 / 4 (100%) |
+| `evals/fixtures/verbose-module.js` | 500-Line Code Module | 487 lines (13.9 KB) | 9 lines (590 B) | **95.8%** | 3 / 3 (100%) |
 
 *Run the evals suite locally to populate benchmark telemetry:*
 ```bash
