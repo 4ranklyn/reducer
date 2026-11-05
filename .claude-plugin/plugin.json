@@ -1,0 +1,45 @@
+{
+  "name": "reducer",
+  "version": "2.0.0",
+  "description": "Subtractive signal engine. Strip any artifact down to its irreducible core.",
+  "author": {
+    "name": "Reducer Contributors"
+  },
+  "hooks": [
+    "./hooks/claude-hooks.json"
+  ],
+  "skills": [
+    "./skills/reducer",
+    "./skills/reducer-audit",
+    "./skills/reducer-seed",
+    "./skills/reducer-review",
+    "./skills/reducer-debt"
+  ],
+  "commands": [
+    {
+      "name": "reducer",
+      "description": "Full subtractive loop: de-reverb, overshoot cut (-75%), rebuild from core, and mute test.",
+      "skill": "reducer"
+    },
+    {
+      "name": "reducer-audit",
+      "description": "Read-only inspection: output cut-list, compression ratio, and anti-patterns without editing.",
+      "skill": "reducer-audit"
+    },
+    {
+      "name": "reducer-seed",
+      "description": "Kernel extraction: extract the single heartbeat in under 20 words.",
+      "skill": "reducer-seed"
+    },
+    {
+      "name": "reducer-review",
+      "description": "Pre-merge reviewer: check diff or draft revision for additive creep and bloat.",
+      "skill": "reducer-review"
+    },
+    {
+      "name": "reducer-debt",
+      "description": "Debt ledger: harvest [PLACEHOLDER: ...] tags and deferred decisions into structured ledger.",
+      "skill": "reducer-debt"
+    }
+  ]
+}

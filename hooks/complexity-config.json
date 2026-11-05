@@ -1,0 +1,5 @@
+{
+  "maxLines": 300,
+  "maxBytes": 15000,
+  "reminder": "[reducer] Target file exceeds complexity threshold (> %LIMIT%). Consider running /reducer-audit or /reducer lite before expanding scope."
+}

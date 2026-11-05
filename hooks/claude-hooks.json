@@ -1,0 +1,28 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "edit_file|write_file|read_file",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"hooks/complexity-reminder.js\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "write_file|edit_file",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"hooks/lint-reverb.js\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}
