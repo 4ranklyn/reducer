@@ -1,0 +1,16 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "reducer",
+  "description": "Subtractive signal engine for AI agents. Strip any artifact down to its irreducible core.",
+  "owner": {
+    "name": "Reducer Contributors"
+  },
+  "plugins": [
+    {
+      "name": "reducer",
+      "description": "Subtractive signal engine: strip specs, architectures, code, and memos down to their irreducible core.",
+      "source": "./",
+      "category": "productivity"
+    }
+  ]
+}
