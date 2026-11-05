@@ -5,6 +5,9 @@
   "author": {
     "name": "Reducer Contributors"
   },
+  "hooks": [
+    "./hooks/claude-hooks.json"
+  ],
   "skills": [
     "./skills/reducer",
     "./skills/reducer-audit",

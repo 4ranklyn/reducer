@@ -1,0 +1,142 @@
+#!/usr/bin/env node
+const fs = require('fs');
+const path = require('path');
+
+function scanFile(filePath, items) {
+  const content = fs.readFileSync(filePath, 'utf8');
+  const lines = content.split(/\r?\n/);
+
+  lines.forEach((line, idx) => {
+    const lineNum = idx + 1;
+    const relFile = path.relative(process.cwd(), filePath).replace(/\\/g, '/');
+
+    // Pattern 1: [PLACEHOLDER: ...]
+    const placeholderMatch = line.match(/\[PLACEHOLDER:\s*([^\]]+)\]/i);
+    if (placeholderMatch) {
+      const raw = placeholderMatch[1].trim();
+      let item = raw;
+      let owner = 'Pending human owner assignment';
+      let blocking = false;
+
+      // Extract details if pipe-separated (e.g., [PLACEHOLDER: name | Owner: X | Blocking: Y])
+      if (raw.includes('|')) {
+        const parts = raw.split('|').map(p => p.trim());
+        item = parts[0];
+        for (let i = 1; i < parts.length; i++) {
+          const part = parts[i];
+          if (/^owner:\s*(.+)$/i.test(part)) {
+            owner = part.replace(/^owner:\s*/i, '').trim();
+          } else if (/^blocking:\s*([yn]|true|false)/i.test(part)) {
+            const val = part.replace(/^blocking:\s*/i, '').trim().toLowerCase();
+            blocking = val === 'y' || val === 'true';
+          }
+        }
+      } else {
+        if (/blocking|critical|blocker/i.test(raw)) {
+          blocking = true;
+        }
+      }
+
+      items.push({
+        id: `D-${String(items.length + 1).padStart(2, '0')}`,
+        item,
+        location: `${relFile}:${lineNum}`,
+        owner,
+        blocking
+      });
+      return;
+    }
+
+    // Pattern 2: TODO(...) or FIXME(...) or DEFERRED(...)
+    const todoMatch = line.match(/\b(TODO|FIXME|DEFERRED)(?:\(([^)]+)\))?:\s*(.+)$/i);
+    if (todoMatch) {
+      const type = todoMatch[1].toUpperCase();
+      const owner = todoMatch[2] ? todoMatch[2].trim() : 'Unassigned';
+      const detail = todoMatch[3].trim();
+      const blocking = /block|critical|must/i.test(detail) || type === 'FIXME';
+
+      items.push({
+        id: `D-${String(items.length + 1).padStart(2, '0')}`,
+        item: `[${type}] ${detail}`,
+        location: `${relFile}:${lineNum}`,
+        owner: `Owner: ${owner}`,
+        blocking
+      });
+    }
+  });
+}
+
+function scanPath(targetPath, items) {
+  const stat = fs.statSync(targetPath);
+  if (stat.isDirectory()) {
+    const entries = fs.readdirSync(targetPath);
+    for (const entry of entries) {
+      if (['node_modules', '.git'].includes(entry)) continue;
+      scanPath(path.join(targetPath, entry), items);
+    }
+  } else if (stat.isFile()) {
+    scanFile(targetPath, items);
+  }
+}
+
+function main() {
+  const args = process.argv.slice(2);
+  const isJson = args.includes('--json');
+  const targetPaths = args.filter(a => a !== '--json');
+
+  if (targetPaths.length === 0) {
+    targetPaths.push('.');
+  }
+
+  const items = [];
+  for (const p of targetPaths) {
+    if (fs.existsSync(p)) {
+      scanPath(p, items);
+    } else {
+      console.error(`Target path does not exist: ${p}`);
+      process.exit(2);
+    }
+  }
+
+  const blockingCount = items.filter(i => i.blocking).length;
+  const nonBlockingCount = items.length - blockingCount;
+
+  if (isJson) {
+    console.log(JSON.stringify({
+      total: items.length,
+      blocking: blockingCount,
+      nonBlocking: nonBlockingCount,
+      items
+    }, null, 2));
+  } else {
+    console.log(`### Reducer Debt Ledger\n`);
+    console.log(`- **Total Deferred Items:** ${items.length}`);
+    console.log(`- **Blocking Items:** ${blockingCount}`);
+    console.log(`- **Non-Blocking Items:** ${nonBlockingCount}\n`);
+
+    if (items.length === 0) {
+      console.log(`*Zero deferred decisions or [PLACEHOLDER] markers found. Ledger is clean.*\n`);
+    } else {
+      console.log(`| ID | Item | Location | Owner-Decision Needed | Blocking (Y/N) |`);
+      console.log(`|:---|:-----|:---------|:----------------------|:---------------|`);
+      for (const item of items) {
+        console.log(`| \`${item.id}\` | \`${item.item}\` | \`${item.location}\` | ${item.owner} | [${item.blocking ? 'Y' : 'N'}] |`);
+      }
+      console.log(`\n### Recommended Action Order`);
+      const blockingItems = items.filter(i => i.blocking);
+      if (blockingItems.length > 0) {
+        blockingItems.forEach((b, idx) => {
+          console.log(`${idx + 1}. Resolve blocking debt \`${b.id}\` at \`${b.location}\` (${b.item})`);
+        });
+      } else {
+        console.log(`1. No blocking items. Review non-blocking ledger before release.`);
+      }
+    }
+  }
+
+  if (blockingCount > 0) {
+    process.exit(1);
+  }
+}
+
+main();

@@ -1,0 +1,32 @@
+{
+  "throatClearing": [
+    "let me first explain",
+    "in order to understand",
+    "before we begin",
+    "it is worth noting that",
+    "to provide some context",
+    "as an ai",
+    "first and foremost"
+  ],
+  "hedging": [
+    "it could potentially be argued",
+    "in some sense",
+    "more or less",
+    "arguably",
+    "it is important to remember that",
+    "needless to say",
+    "at the end of the day"
+  ],
+  "emptyWrappers": [
+    "### overview\\s*\\n+\\s*###",
+    "### context\\s*\\n+\\s*###",
+    "### notes\\s*\\n+\\s*###"
+  ],
+  "reverbPhrases": [
+    "seamless and robust",
+    "cutting-edge solution",
+    "leverage best practices",
+    "holistic approach",
+    "state of the art"
+  ]
+}
