@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Verify Invariants & Evals
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 1. Check Adapter Symmetry (sync-adapters --check)
+        run: node scripts/sync-adapters.js --check
+
+      - name: 2. Run Debt Scanner Unit Tests
+        run: node --test tests/debt-scan.test.js
+
+      - name: 3. Run Reduction & Invariant Evals
+        run: node evals/run-evals.js
